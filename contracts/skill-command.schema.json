@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:r1-summer-research:contract:skill-command:1.0",
+  "title": "SkillCommand",
+  "description": "Normative project draft. A remote RTDL action request, not a motor, DDS, joint, or physical-safety command.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "command_id",
+    "robot_id",
+    "issued_at",
+    "expires_at",
+    "ttl_ms",
+    "priority",
+    "skill",
+    "args",
+    "preconditions",
+    "on_timeout"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "description": "Globally unique idempotency key. Retries reuse the same value."
+    },
+    "robot_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "lease_id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "description": "Required for motion skills and optional for stop correlation."
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ttl_ms": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30000,
+      "description": "Protocol lifetime ceiling, not a physical safety limit. Robot-side policy may be stricter."
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Requested priority only. Robot-side policy maps or caps the effective priority."
+    },
+    "skill": {
+      "enum": ["stand", "move_velocity", "stop"]
+    },
+    "args": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "maxProperties": 0
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["vx_mps", "vy_mps", "yaw_rate_rps", "duration_ms"],
+          "properties": {
+            "vx_mps": {"type": "number"},
+            "vy_mps": {"type": "number"},
+            "yaw_rate_rps": {"type": "number"},
+            "duration_ms": {"type": "integer", "minimum": 1}
+          }
+        }
+      ]
+    },
+    "preconditions": {
+      "type": "array",
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["capability_available", "not_estopped", "armed", "lease_valid"]
+      },
+      "description": "Requested conditions that the robot-side safety supervisor independently evaluates."
+    },
+    "on_timeout": {
+      "const": "safe_stop",
+      "description": "Requests a local safety-state outcome and does not select a hardware command."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "skill": {
+            "enum": ["stand", "move_velocity"]
+          }
+        },
+        "required": ["skill"]
+      },
+      "then": {
+        "required": ["lease_id"],
+        "properties": {
+          "preconditions": {
+            "contains": {"const": "armed"},
+            "minContains": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "skill": {
+            "const": "stand"
+          }
+        },
+        "required": ["skill"]
+      },
+      "then": {
+        "properties": {
+          "args": {
+            "type": "object",
+            "additionalProperties": false,
+            "maxProperties": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "skill": {
+            "const": "move_velocity"
+          }
+        },
+        "required": ["skill"]
+      },
+      "then": {
+        "properties": {
+          "args": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["vx_mps", "vy_mps", "yaw_rate_rps", "duration_ms"],
+            "properties": {
+              "vx_mps": {
+                "type": "number",
+                "description": "Requested forward velocity. Local policy owns authoritative limits."
+              },
+              "vy_mps": {
+                "type": "number",
+                "description": "Requested lateral velocity. Local policy owns authoritative limits."
+              },
+              "yaw_rate_rps": {
+                "type": "number",
+                "description": "Requested yaw rate. Local policy owns authoritative limits."
+              },
+              "duration_ms": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Requested duration. Local policy owns the accepted maximum."
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "skill": {
+            "const": "stop"
+          }
+        },
+        "required": ["skill"]
+      },
+      "then": {
+        "properties": {
+          "args": {
+            "type": "object",
+            "additionalProperties": false,
+            "maxProperties": 0
+          },
+          "preconditions": {
+            "type": "array",
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

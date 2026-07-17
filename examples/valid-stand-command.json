@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "command_id": "cmd-stand-0001",
+  "robot_id": "r1-research-unit",
+  "lease_id": "lease-motion-0001",
+  "issued_at": "2099-01-01T00:00:00Z",
+  "expires_at": "2099-01-01T00:00:03Z",
+  "ttl_ms": 3000,
+  "priority": 50,
+  "skill": "stand",
+  "args": {},
+  "preconditions": ["capability_available", "not_estopped", "armed", "lease_valid"],
+  "on_timeout": "safe_stop"
+}

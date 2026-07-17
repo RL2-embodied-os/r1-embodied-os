@@ -1,0 +1,16 @@
+{
+  "schema_version": "0.1",
+  "result_id": "asr-result-invalid-confidence",
+  "source_audio": {
+    "robot_id": "research-unit-01",
+    "sensor_id": "audio-mock-01",
+    "sequence": 5
+  },
+  "recognizer": "fake",
+  "status": "succeeded",
+  "text": "This result must fail schema validation.",
+  "language": "en",
+  "confidence": 1.5,
+  "processed_at": "2026-07-17T08:05:01Z",
+  "error": null
+}

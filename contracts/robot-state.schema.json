@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:r1-summer-research:contract:robot-state:1.0",
+  "title": "RobotState",
+  "description": "Normative project draft for a normalized robot-state snapshot.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "robot_id",
+    "timestamp_mono_ns",
+    "timestamp_utc",
+    "mode",
+    "health",
+    "battery_pct",
+    "standing",
+    "moving",
+    "estopped",
+    "controlled_by_remote",
+    "errors",
+    "capability_snapshot_version"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "robot_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "timestamp_mono_ns": {"type": "integer", "minimum": 0},
+    "timestamp_utc": {"type": "string", "format": "date-time"},
+    "mode": {
+      "enum": ["boot", "discovery", "idle", "armed", "executing", "safe_stop", "estop", "unknown"]
+    },
+    "health": {
+      "enum": ["ready", "busy", "degraded", "offline", "estop", "unknown"]
+    },
+    "battery_pct": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 100
+    },
+    "standing": {"type": ["boolean", "null"]},
+    "moving": {"type": ["boolean", "null"]},
+    "estopped": {"type": ["boolean", "null"]},
+    "controlled_by_remote": {"type": ["boolean", "null"]},
+    "errors": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {"type": "string", "minLength": 1, "maxLength": 512}
+    },
+    "capability_snapshot_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    }
+  }
+}

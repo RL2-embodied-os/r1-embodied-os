@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "robot_id": "research-unit-01",
+  "robot_type": "unitree_r1",
+  "sku": null,
+  "firmware_version": null,
+  "sdk_revision": null,
+  "joint_layout_version": null,
+  "generated_at": "2099-01-01T00:00:00Z",
+  "capabilities": {
+    "stand": {"status": "unverified", "evidence": [], "verified_at": null, "notes": "Requires delivered-firmware commissioning."},
+    "move_velocity": {"status": "unverified", "evidence": [], "verified_at": null, "notes": "Requires delivered-firmware commissioning."},
+    "stop": {"status": "unverified", "evidence": [], "verified_at": null, "notes": "Contract request only; local safety behavior requires validation."},
+    "camera": {"status": "unverified", "evidence": [], "verified_at": null, "notes": "Sensor availability and format require validation."},
+    "audio_input": {"status": "unverified", "evidence": [], "verified_at": null, "notes": "Sensor availability and format require validation."},
+    "audio_output": {"status": "unverified", "evidence": [], "verified_at": null, "notes": "Output availability and format require validation."},
+    "depth_camera": {"status": "unverified", "evidence": [], "verified_at": null, "notes": "Not assumed by this package."},
+    "navigation": {"status": "unverified", "evidence": [], "verified_at": null, "notes": "Not assumed by this package."},
+    "obstacle_avoidance": {"status": "unverified", "evidence": [], "verified_at": null, "notes": "Not assumed by this package."},
+    "ros2": {"status": "unverified", "evidence": [], "verified_at": null, "notes": "Not assumed by this package."},
+    "sit": {"status": "unverified", "evidence": [], "verified_at": null, "notes": "Excluded from the initial skill set pending firmware validation."}
+  }
+}

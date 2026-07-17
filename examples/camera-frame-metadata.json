@@ -1,0 +1,20 @@
+{
+  "schema_version": "0.1",
+  "contract_status": "draft",
+  "robot_id": "research-unit-01",
+  "sensor_id": "camera-unverified-01",
+  "captured_at": "2099-01-01T00:00:00Z",
+  "sequence": 0,
+  "timestamp_source": "unknown",
+  "content_type": "video/unknown",
+  "encoding": null,
+  "width_px": null,
+  "height_px": null,
+  "calibration_version": null,
+  "verification_status": "unverified",
+  "transport": {
+    "type": "webrtc",
+    "reference": "webrtc:00000000-0000-4000-8000-000000000001",
+    "expires_at": "2099-01-01T00:01:00Z"
+  }
+}

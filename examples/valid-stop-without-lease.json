@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "command_id": "cmd-stop-0001",
+  "robot_id": "r1-research-unit",
+  "issued_at": "2099-01-01T00:00:00Z",
+  "expires_at": "2099-01-01T00:00:01Z",
+  "ttl_ms": 1000,
+  "priority": 100,
+  "skill": "stop",
+  "args": {},
+  "preconditions": [],
+  "on_timeout": "safe_stop"
+}

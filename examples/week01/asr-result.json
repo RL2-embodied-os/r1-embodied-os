@@ -1,0 +1,16 @@
+{
+  "schema_version": "0.1",
+  "result_id": "asr-result-0001",
+  "source_audio": {
+    "robot_id": "research-unit-01",
+    "sensor_id": "audio-mock-01",
+    "sequence": 3
+  },
+  "recognizer": "fake",
+  "status": "succeeded",
+  "text": "Please inspect the workbench.",
+  "language": "en",
+  "confidence": 0.95,
+  "processed_at": "2026-07-17T08:03:01Z",
+  "error": null
+}

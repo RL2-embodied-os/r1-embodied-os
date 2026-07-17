@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "robot_id": "research-unit-01",
+  "timestamp_mono_ns": 0,
+  "timestamp_utc": "2099-01-01T00:00:00Z",
+  "mode": "unknown",
+  "health": "unknown",
+  "battery_pct": null,
+  "standing": null,
+  "moving": null,
+  "estopped": null,
+  "controlled_by_remote": null,
+  "errors": [],
+  "capability_snapshot_version": "commissioning-pending"
+}

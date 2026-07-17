@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:r1-summer-research:contract:telemetry:1.0",
+  "title": "Telemetry",
+  "description": "Normative project draft for normalized telemetry observations.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "robot_id",
+    "timestamp_utc",
+    "health",
+    "mode",
+    "battery_pct",
+    "network",
+    "safety",
+    "errors"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "robot_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "timestamp_utc": {"type": "string", "format": "date-time"},
+    "health": {
+      "enum": ["ready", "busy", "degraded", "offline", "estop", "unknown"]
+    },
+    "mode": {
+      "enum": ["boot", "discovery", "idle", "armed", "executing", "safe_stop", "estop", "unknown"]
+    },
+    "battery_pct": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+    "network": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rtt_ms", "packet_loss_ratio", "uplink_mbps"],
+      "properties": {
+        "rtt_ms": {"type": ["number", "null"], "minimum": 0},
+        "packet_loss_ratio": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "uplink_mbps": {"type": ["number", "null"], "minimum": 0}
+      }
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["armed", "estopped", "remote_override", "active_lease_id"],
+      "properties": {
+        "armed": {"type": ["boolean", "null"]},
+        "estopped": {"type": ["boolean", "null"]},
+        "remote_override": {"type": ["boolean", "null"]},
+        "active_lease_id": {
+          "type": ["string", "null"],
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "errors": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {"type": "string", "minLength": 1, "maxLength": 512}
+    }
+  }
+}

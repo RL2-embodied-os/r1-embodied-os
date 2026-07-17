@@ -1,0 +1,20 @@
+{
+  "schema_version": "0.1",
+  "contract_status": "draft",
+  "robot_id": "research-unit-01",
+  "sensor_id": "camera-mock-01",
+  "captured_at": "2026-07-17T08:06:00Z",
+  "sequence": 10,
+  "timestamp_source": "unknown",
+  "content_type": "image/unknown",
+  "encoding": null,
+  "width_px": null,
+  "height_px": null,
+  "calibration_version": null,
+  "verification_status": "unverified",
+  "transport": {
+    "type": "object_storage",
+    "reference": "object:00000000-0000-4000-8000-000000000010",
+    "expires_at": "2099-01-01T00:01:00Z"
+  }
+}

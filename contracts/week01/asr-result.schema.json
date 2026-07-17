@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:r1-summer-research:contract:asr-result:0.1",
+  "title": "ASRResult",
+  "description": "DESIGN: normalized ASR result metadata. It contains no audio bytes, Base64, local paths, or transport URLs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "result_id",
+    "source_audio",
+    "recognizer",
+    "status",
+    "text",
+    "language",
+    "confidence",
+    "processed_at",
+    "error"
+  ],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "result_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "source_audio": {"$ref": "#/$defs/source_reference"},
+    "recognizer": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "status": {
+      "enum": [
+        "succeeded",
+        "no_speech",
+        "media_unavailable",
+        "unsupported_format",
+        "recognizer_unavailable",
+        "failed"
+      ]
+    },
+    "text": {"type": "string", "maxLength": 16384},
+    "language": {
+      "type": ["string", "null"],
+      "maxLength": 35,
+      "pattern": "^[A-Za-z]{2,8}(-[A-Za-z0-9]{1,8})*$"
+    },
+    "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "processed_at": {"type": "string", "format": "date-time"},
+    "error": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/error"}
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "succeeded"}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "text": {"type": "string", "minLength": 1},
+          "error": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "no_speech"}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "text": {"const": ""},
+          "language": {"type": "null"},
+          "confidence": {"type": "null"},
+          "error": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"enum": ["media_unavailable", "unsupported_format", "recognizer_unavailable", "failed"]}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "text": {"const": ""},
+          "language": {"type": "null"},
+          "confidence": {"type": "null"},
+          "error": {"$ref": "#/$defs/error"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "media_unavailable"}}, "required": ["status"]},
+      "then": {"properties": {"error": {"properties": {"code": {"const": "media_unavailable"}}}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "unsupported_format"}}, "required": ["status"]},
+      "then": {"properties": {"error": {"properties": {"code": {"const": "unsupported_format"}}}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "recognizer_unavailable"}}, "required": ["status"]},
+      "then": {"properties": {"error": {"properties": {"code": {"const": "recognizer_unavailable"}}}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "failed"}}, "required": ["status"]},
+      "then": {"properties": {"error": {"properties": {"code": {"const": "failed"}}}}}
+    }
+  ],
+  "$defs": {
+    "source_reference": {
+      "description": "DESIGN — shared media identity. Keep in sync with detection-frame-result.schema.json $defs/source_reference.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["robot_id", "sensor_id", "sequence"],
+      "properties": {
+        "robot_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "sensor_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "sequence": {"type": "integer", "minimum": 0}
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message", "retryable"],
+      "properties": {
+        "code": {
+          "enum": ["media_unavailable", "unsupported_format", "recognizer_unavailable", "failed"]
+        },
+        "message": {"type": "string", "minLength": 1, "maxLength": 512},
+        "retryable": {"type": "boolean"}
+      }
+    }
+  }
+}

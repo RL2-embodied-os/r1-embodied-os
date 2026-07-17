@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1",
+  "source_frame": {
+    "robot_id": "research-unit-01",
+    "sensor_id": "camera-mock-01",
+    "sequence": 8
+  },
+  "detector": "fake",
+  "image_width": 640,
+  "image_height": 480,
+  "processed_at": "2026-07-17T08:01:01Z",
+  "detections": [
+    {
+      "detection_id": "det-invalid-order",
+      "class_id": 0,
+      "class_name": "person",
+      "confidence": 0.75,
+      "bbox_xyxy": [110.0, 20.0, 10.0, 220.0],
+      "observed_at": "2026-07-17T08:01:00Z"
+    }
+  ]
+}

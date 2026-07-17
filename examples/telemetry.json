@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "robot_id": "research-unit-01",
+  "timestamp_utc": "2099-01-01T00:00:00Z",
+  "health": "unknown",
+  "mode": "unknown",
+  "battery_pct": null,
+  "network": {
+    "rtt_ms": null,
+    "packet_loss_ratio": null,
+    "uplink_mbps": null
+  },
+  "safety": {
+    "armed": null,
+    "estopped": null,
+    "remote_override": null,
+    "active_lease_id": null
+  },
+  "errors": []
+}

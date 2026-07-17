@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:r1-summer-research:contract:capability:1.0",
+  "title": "CapabilityReport",
+  "description": "Normative project draft for versioned capability evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "robot_id",
+    "robot_type",
+    "sku",
+    "firmware_version",
+    "sdk_revision",
+    "joint_layout_version",
+    "generated_at",
+    "capabilities"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "robot_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "robot_type": {"const": "unitree_r1"},
+    "sku": {"type": ["string", "null"], "maxLength": 128},
+    "firmware_version": {"type": ["string", "null"], "maxLength": 128},
+    "sdk_revision": {"type": ["string", "null"], "maxLength": 128},
+    "joint_layout_version": {"type": ["string", "null"], "maxLength": 128},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stand",
+        "move_velocity",
+        "stop",
+        "camera",
+        "audio_input",
+        "audio_output",
+        "depth_camera",
+        "navigation",
+        "obstacle_avoidance",
+        "ros2",
+        "sit"
+      ],
+      "properties": {
+        "stand": {"$ref": "#/$defs/capability"},
+        "move_velocity": {"$ref": "#/$defs/capability"},
+        "stop": {"$ref": "#/$defs/capability"},
+        "camera": {"$ref": "#/$defs/capability"},
+        "audio_input": {"$ref": "#/$defs/capability"},
+        "audio_output": {"$ref": "#/$defs/capability"},
+        "depth_camera": {"$ref": "#/$defs/capability"},
+        "navigation": {"$ref": "#/$defs/capability"},
+        "obstacle_avoidance": {"$ref": "#/$defs/capability"},
+        "ros2": {"$ref": "#/$defs/capability"},
+        "sit": {"$ref": "#/$defs/capability"}
+      }
+    }
+  },
+  "$defs": {
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "evidence", "verified_at", "notes"],
+      "properties": {
+        "status": {
+          "enum": ["supported", "unavailable", "unverified", "degraded"]
+        },
+        "evidence": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {"type": "string", "minLength": 1, "maxLength": 512}
+        },
+        "verified_at": {"type": ["string", "null"], "format": "date-time"},
+        "notes": {"type": "string", "maxLength": 1024}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"status": {"const": "supported"}},
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "evidence": {"minItems": 1},
+              "verified_at": {"type": "string", "format": "date-time"}
+            },
+            "required": ["verified_at"]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:r1-summer-research:contract:camera-frame-metadata:0.1-draft",
+  "title": "CameraFrameMetadataDraft",
+  "description": "Non-normative draft metadata. Binary and Base64 media are prohibited.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_status",
+    "robot_id",
+    "sensor_id",
+    "captured_at",
+    "sequence",
+    "timestamp_source",
+    "content_type",
+    "encoding",
+    "width_px",
+    "height_px",
+    "calibration_version",
+    "verification_status",
+    "transport"
+  ],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "contract_status": {"const": "draft"},
+    "robot_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "sensor_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "captured_at": {"type": "string", "format": "date-time"},
+    "sequence": {"type": "integer", "minimum": 0},
+    "timestamp_source": {
+      "enum": ["monotonic_correlated", "utc", "device", "unknown"]
+    },
+    "content_type": {
+      "type": "string",
+      "pattern": "^(image|video)/[A-Za-z0-9.+-]+$"
+    },
+    "encoding": {"type": ["string", "null"], "maxLength": 128},
+    "width_px": {"type": ["integer", "null"], "minimum": 1},
+    "height_px": {"type": ["integer", "null"], "minimum": 1},
+    "calibration_version": {"type": ["string", "null"], "maxLength": 128},
+    "verification_status": {
+      "enum": ["unverified", "verified", "degraded"]
+    },
+    "transport": {
+      "$ref": "#/$defs/transport"
+    }
+  },
+  "$defs": {
+    "transport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "reference", "expires_at"],
+      "properties": {
+        "type": {
+          "enum": ["webrtc", "multipart_upload", "object_storage"]
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^(webrtc|multipart|object):[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "Opaque namespaced UUID reference; URLs, Base64, and media bytes do not match."
+        },
+        "expires_at": {"type": ["string", "null"], "format": "date-time"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"type": {"const": "webrtc"}}, "required": ["type"]},
+          "then": {"properties": {"reference": {"pattern": "^webrtc:"}}}
+        },
+        {
+          "if": {"properties": {"type": {"const": "multipart_upload"}}, "required": ["type"]},
+          "then": {"properties": {"reference": {"pattern": "^multipart:"}}}
+        },
+        {
+          "if": {"properties": {"type": {"const": "object_storage"}}, "required": ["type"]},
+          "then": {"properties": {"reference": {"pattern": "^object:"}}}
+        }
+      ]
+    }
+  }
+}

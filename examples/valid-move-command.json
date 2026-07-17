@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "command_id": "cmd-move-0001",
+  "robot_id": "r1-research-unit",
+  "lease_id": "lease-motion-0001",
+  "issued_at": "2099-01-01T00:00:00Z",
+  "expires_at": "2099-01-01T00:00:02Z",
+  "ttl_ms": 2000,
+  "priority": 50,
+  "skill": "move_velocity",
+  "args": {
+    "vx_mps": 0.1,
+    "vy_mps": 0.0,
+    "yaw_rate_rps": 0.0,
+    "duration_ms": 500
+  },
+  "preconditions": ["capability_available", "not_estopped", "armed", "lease_valid"],
+  "on_timeout": "safe_stop"
+}

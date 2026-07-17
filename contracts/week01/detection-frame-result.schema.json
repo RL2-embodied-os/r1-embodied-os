@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:r1-summer-research:contract:detection-frame-result:0.1",
+  "title": "DetectionFrameResult",
+  "description": "DESIGN: normalized per-frame 2D detection output. It contains no image payload and source_frame is not a ROS/TF frame.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_frame",
+    "detector",
+    "image_width",
+    "image_height",
+    "processed_at",
+    "detections"
+  ],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "source_frame": {"$ref": "#/$defs/source_reference"},
+    "detector": {"enum": ["fake", "yolo_v5"]},
+    "image_width": {"type": "integer", "minimum": 1},
+    "image_height": {"type": "integer", "minimum": 1},
+    "processed_at": {"type": "string", "format": "date-time"},
+    "detections": {
+      "type": "array",
+      "maxItems": 4096,
+      "items": {"$ref": "#/$defs/detection_2d"}
+    }
+  },
+  "$defs": {
+    "source_reference": {
+      "description": "DESIGN — shared media identity. Keep in sync with asr-result.schema.json $defs/source_reference.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["robot_id", "sensor_id", "sequence"],
+      "properties": {
+        "robot_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "sensor_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "sequence": {"type": "integer", "minimum": 0}
+      }
+    },
+    "detection_2d": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "detection_id",
+        "class_id",
+        "class_name",
+        "confidence",
+        "bbox_xyxy",
+        "observed_at"
+      ],
+      "properties": {
+        "detection_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "class_id": {"type": "integer", "minimum": 0},
+        "class_name": {"type": "string", "minLength": 1, "maxLength": 256},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "bbox_xyxy": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "prefixItems": [
+            {"type": "number", "minimum": 0},
+            {"type": "number", "minimum": 0},
+            {"type": "number", "minimum": 0},
+            {"type": "number", "minimum": 0}
+          ],
+          "items": false,
+          "description": "Pixel coordinates [x1, y1, x2, y2]. Ordering and image bounds are semantic checks."
+        },
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1",
+  "source_frame": {
+    "robot_id": "research-unit-01",
+    "sensor_id": "camera-mock-01",
+    "sequence": 9
+  },
+  "detector": "fake",
+  "image_width": 640,
+  "image_height": 480,
+  "processed_at": "2026-07-17T08:02:01Z",
+  "detections": [
+    {
+      "detection_id": "det-out-of-bounds",
+      "class_id": 0,
+      "class_name": "person",
+      "confidence": 0.75,
+      "bbox_xyxy": [10.0, 20.0, 700.0, 220.0],
+      "observed_at": "2026-07-17T08:02:00Z"
+    }
+  ]
+}
