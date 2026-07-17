@@ -46,7 +46,7 @@ AudioChunkMetadata
 
 | Contract/interface | Producer | Consumer | Failure behavior | Unknown handling |
 | --- | --- | --- | --- | --- |
-| `Telemetry` | Edge Data Adapter | QA and monitoring | Schema rejection; stale-data handling is owned by the normalizer workstream | Safety booleans remain `null`; capability state is not inserted |
+| `Telemetry` | Edge Data Adapter | QA and monitoring | **DESIGN** — Valid input returns a complete object; missing/invalid raw fields raise `ValueError` with `missing_required_field`, `invalid_field`, or `invalid_timestamp`; no partial object is returned | Safety booleans remain `null`; capability state is not inserted |
 | `RobotState` | RobotState provider | QA and later agent/edge consumers | Schema rejection; invalid clock data is reported | Unverified physical state remains `null` or `unknown` as allowed |
 | `CapabilityReport` | Hardware evidence workstream | QA and feature gating | Unsupported/unverified capability keeps dependent chains Mock-only | Missing evidence remains `unverified`, never inferred from an SDK symbol |
 | Camera/Audio metadata | Read-only metadata adapter or Mock source | Resolver | Invalid schema is rejected before resolution; expired/unavailable reference returns resolver error | Unverified format fields remain `null` |

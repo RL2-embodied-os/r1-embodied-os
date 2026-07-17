@@ -1,7 +1,7 @@
-# R1 Week 1 Read-only Starter Package
+# R1 Embodied OS — Day 1 Contract Baseline
 
-- **DESIGN** - this package is the team-internal contract baseline for R1 integration into ABot-Claw. It contains documentation, strict data contracts, examples, and side-effect-free Python interface definitions. The contracts defined here apply to all robots (R1, Go2, G1, Piper) — the R1-specific work is the Robot Adapter layer beneath them.
-- **DESIGN** - this directory also contains the Week 1 architecture, QA tests, integration scenarios, and initial reports. It can be copied and tested independently of the source project directories.
+- **DESIGN** - this repository is the contract and read-only integration workspace for R1 integration into ABot-Claw. It contains documentation, strict data contracts, examples, side-effect-free Python interface definitions, and clearly separated Week 1 implementation scaffolds.
+- **DESIGN** - ABot-Claw is a read-only reference during Week 1. This repository must not import ABot-Claw source code; future integration will use an explicit, versioned interface.
 
 ## Run the Week 1 baseline
 
@@ -10,6 +10,30 @@ python -m pip install -r requirements-dev.txt
 python -m pytest tests/
 python -m tests.validate_all_contracts
 ```
+
+- **DESIGN** - Before workstream tests are added, the expected Day 1 baseline is 12 passing pytest tests plus the documented schema and semantic classifications from the contract validator.
+
+## Day 1 status
+
+- **DESIGN** - available now: schemas, examples, TypedDicts, Protocols, architecture notes, QA scenarios, and validation tooling.
+- **DESIGN** - not complete yet: Telemetry/RobotState normalization, visual and audio Mock pipelines, hardware evidence, and cross-workstream integration.
+- **OPEN** - real R1 sensor fields and capabilities remain unverified until the hardware workstream supplies reproducible evidence.
+
+## Week 1 implementation layout
+
+| Location | Ownership and purpose |
+| --- | --- |
+| `contracts/`, `examples/`, `interfaces/` | **DESIGN** - shared contract baseline. The architecture/interface owner reviews and merges contract-shape changes. |
+| `implementations/telemetry/` | **DESIGN** - side-effect-free Telemetry, RobotState, and camera-metadata Mock/read-only implementations. |
+| `implementations/perception/` | **DESIGN** - Mock media resolution, Fake Detector, and visual pipeline coordination. |
+| `implementations/audio/` | **DESIGN** - audio metadata validation, Mock resolution, Fake ASR, and normalization. |
+| `tests/` | **DESIGN** - contract, module, and integration tests using the same public interfaces as callers. |
+| `docs/week01/` | **DESIGN** - architecture, field mappings, and workstream notes. |
+| `experiments/week01/` | **DESIGN** - sanitized commands, results, failures, and reproducibility logs; no production modules. |
+
+- **DESIGN** - teammates implement the shared Protocols; they do not copy schemas, TypedDicts, or Protocol definitions into workstream directories.
+- **DESIGN** - proposed contract changes go through the architecture/interface owner and must update schemas, Python types, examples, documentation, and tests together.
+- **DESIGN** - Week 1 implementations must be deterministic and must not perform network, device, SDK, DDS, subprocess, thread, binary-media, or hardware operations.
 
 ## Evidence labels
 

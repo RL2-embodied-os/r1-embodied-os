@@ -12,7 +12,7 @@ INTERFACES_DIR: Final[Path] = WEEK01_ROOT / "interfaces"
 
 
 def require_contract_baseline() -> Path:
-    """Return the starter-pack root or fail with an actionable setup message."""
+    """Return the repository contract root or fail with an actionable message."""
 
     required = (CONTRACTS_DIR, EXAMPLES_DIR, INTERFACES_DIR)
     missing = [path for path in required if not path.is_dir()]
