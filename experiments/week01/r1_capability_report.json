@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "robot_id": "research-r1-01",
+  "robot_type": "unitree_r1",
+  "sku": "R1",
+  "firmware_version": null,
+  "sdk_revision": null,
+  "joint_layout_version": null,
+  "generated_at": "2026-07-18T00:00:00Z",
+  "capabilities": {
+    "stand": {
+      "status": "unverified",
+      "evidence": ["https://github.com/unitreerobotics/unitree_sdk2/blob/21d0a3b/include/unitree/robot/r1/loco/r1_loco_client.hpp"],
+      "verified_at": null,
+      "notes": "Source version: unitree_sdk2@21d0a3b. Checked 2026-07-18 by local pinned-source inspection. Header presence is not delivered-firmware evidence; commissioning was unavailable."
+    },
+    "move_velocity": {
+      "status": "unverified",
+      "evidence": ["https://github.com/unitreerobotics/unitree_sdk2/blob/21d0a3b/include/unitree/robot/r1/loco/r1_loco_client.hpp"],
+      "verified_at": null,
+      "notes": "Source version: unitree_sdk2@21d0a3b. Checked 2026-07-18 by local pinned-source inspection. No approved motion test was performed; delivered support is unknown."
+    },
+    "stop": {
+      "status": "unverified",
+      "evidence": ["https://github.com/unitreerobotics/unitree_sdk2/blob/21d0a3b/include/unitree/robot/r1/loco/r1_loco_client.hpp"],
+      "verified_at": null,
+      "notes": "Source version: unitree_sdk2@21d0a3b. Checked 2026-07-18 by local pinned-source inspection. Software stop behavior and the physical E-Stop chain were not verified."
+    },
+    "camera": {
+      "status": "unverified",
+      "evidence": ["https://www.unitree.com/R1/"],
+      "verified_at": null,
+      "notes": "Source version: live product page, unversioned. Checked 2026-07-18 by product-table inspection for the operator-reported R1 SKU. Delivered device, format, calibration, transport, and permission are unknown."
+    },
+    "audio_input": {
+      "status": "unverified",
+      "evidence": ["https://www.unitree.com/R1/", "https://github.com/unitreerobotics/unitree_sdk2/blob/21d0a3b/example/r1/audio/r1_audio_client_example.cpp"],
+      "verified_at": null,
+      "notes": "Source version: live product page (unversioned) and unitree_sdk2@21d0a3b. Checked 2026-07-18 by product/local-source inspection. Example constants are 16 kHz mono signed 16-bit PCM; delivered format, timing, permission, and privacy procedure remain unverified."
+    },
+    "audio_output": {
+      "status": "unverified",
+      "evidence": ["https://www.unitree.com/R1/", "https://github.com/unitreerobotics/unitree_sdk2/blob/21d0a3b/example/r1/audio/r1_audio_client_example.cpp"],
+      "verified_at": null,
+      "notes": "Source version: live product page (unversioned) and unitree_sdk2@21d0a3b. Checked 2026-07-18 by product/local-source inspection. No playback or sound output was run; delivered availability and approval are unknown."
+    },
+    "depth_camera": {
+      "status": "unverified",
+      "evidence": ["https://www.unitree.com/R1/"],
+      "verified_at": null,
+      "notes": "Source version: live product page, unversioned. Checked 2026-07-18 by product-table inspection of the R1 row. A binocular camera label is not evidence of a depth stream or API."
+    },
+    "navigation": {
+      "status": "unverified",
+      "evidence": [],
+      "verified_at": null,
+      "notes": "Source version: Week 01 baseline at 2026-07-15. Checked 2026-07-18 by source inventory. No R1-specific first-party support evidence or delivered-system test was available."
+    },
+    "obstacle_avoidance": {
+      "status": "unverified",
+      "evidence": [],
+      "verified_at": null,
+      "notes": "Source version: Week 01 baseline at 2026-07-15. Checked 2026-07-18 by source inventory. Sensor, algorithm, behavior, and delivered safety response are unknown."
+    },
+    "ros2": {
+      "status": "unverified",
+      "evidence": ["https://github.com/unitreerobotics/unitree_sdk2/tree/21d0a3b/example/r1"],
+      "verified_at": null,
+      "notes": "Source version: unitree_sdk2@21d0a3b. Checked 2026-07-18 by local source-boundary review. SDK DDS usage alone does not prove supported R1 ROS 2 compatibility."
+    },
+    "sit": {
+      "status": "unverified",
+      "evidence": ["https://github.com/unitreerobotics/unitree_sdk2/blob/21d0a3b/include/unitree/robot/r1/loco/r1_loco_client.hpp"],
+      "verified_at": null,
+      "notes": "Source version: unitree_sdk2@21d0a3b. Checked 2026-07-18 by local header inventory. Sit is commented out in the header/example; that is neither support evidence nor proof of delivered unavailability."
+    }
+  }
+}
