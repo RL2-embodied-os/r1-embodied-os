@@ -131,6 +131,63 @@ names `rt/lowstate`; its `LowState_` type contains version/mode/tick, IMU, motor
 wireless, reserve, and CRC fields. The audio example contains 16 kHz, mono, signed
 16-bit PCM example constants. None confirms delivered firmware support.
 
+The operator also transcribed the live official R1 developer guide on 2026-07-18.
+It documents DDS publish/subscribe and request/response interaction patterns,
+function-style wrappers over API calls, and `unitree_sdk2` as the C++ kit. It reports
+that the current software version does not support GST video streaming, without
+providing the exact version string. This narrows the camera transport plan but does
+not establish that the delivered camera is unavailable.
+
+A second official-guide excerpt documents MQTT for fault/OTA/WebRTC signalling,
+HTTP for App/Web binding, STUN/TURN for WebRTC connectivity, and WebRTC as the main
+App path for audio/video, lidar point clouds, motion state, and control. It states
+that DDS supports C++/Python, DDS IDL is ROS 2-compatible with a suitable RMW, EDU
+can call interfaces through DDS or ROS 2, and EDU secondary development is limited
+to PC1. The supplied internal PC1 address and credential instructions were not
+copied into this public log.
+
+A third official-guide excerpt supplies ChannelFactory/Publisher/Subscriber APIs,
+host-monotonic last-receive time in microseconds, Client API/server version getters,
+RPC error codes, and the R1 Topic inventory. It identifies low-frequency BMS,
+mainboard, LowState, odometry, and torso-IMU feedback topics and separate command
+topics. Pinned-source inspection confirms `BmsState_.soc` as the battery-percentage
+candidate and confirms that `ChannelSubscriber::InitChannel()` calls
+`CreateRecvChannel`.
+
+Two live-documentation discrepancies were recorded: its three-argument
+`ChannelFactory::Init(..., enableSharedMemory)` is absent from the pinned public
+header, and its subscriber note incorrectly says `CreateSendChannel` while the
+pinned implementation uses `CreateRecvChannel`. These differences block copying the
+live signature into the pinned build until the delivered SDK revision is known.
+
+A fourth official-guide excerpt documents the reused B2 RobotStateClient and the
+R1 service labels `ai_sport`, `basic_service`, `r1_arm_example`, `vui_service`, and
+`unitree_slam`. Pinned-source inspection separates read-only `ServiceList`,
+`LowPowerStatus`, and `GetPkgVersion` from state-changing `ServiceSwitch`,
+`SetReportFreq`, and `LowPowerSwitch`. The latter three are excluded. The public Go2
+example is also excluded because it changes report frequency and toggles a service.
+Service names/status values are inventory only and were not used to promote any
+capability. The pinned error header additionally contains `5203` and `5204`, absent
+from the supplied live excerpt, so delivered SDK/version capture remains required.
+
+A fifth official-guide excerpt defines the R1 low-level DDS structures. It confirms
+`LowState.mode_machine` codes `4/5/6` for 23-/29-/27-DoF configurations,
+`mode_pr` codes `0/1`, a 1 ms `tick`, quaternion order `Qw,Qx,Qy,Qz`, and motor
+position/velocity/acceleration units of rad/rad/s/rad/s^2. It does not define joint
+slot ordering, active slot count, IMU units/frame, torque or temperature units,
+state bits, CRC procedure, or tick reset/wrap behavior. The read-only plan therefore
+captures these values without extrapolation. All command publishers remain excluded,
+including `rt/lowcmd` and both Dex3 command topics.
+
+A sixth official-guide excerpt documents the high-level motion service. It supplies
+FSM IDs `0=zero torque`, `1=damping`, `4=locked standing`, and `811=walk/run
+controller`, so `GetFsmId` is now an exact public mapping candidate. It also states
+that the service depends on the built-in controller and becomes unavailable after
+debug mode makes that controller exit. All state-changing methods (`Damp`, `Start`,
+`StandUp`, `ZeroTorque`, `Move`, `StopMove`, `SetFsmId`, and `SetVelocity`) remain
+excluded. `StopMove` merely zeros the velocity command and was not classified as
+physical E-Stop or verified safe-stop. No RPC was sent to the delivered robot.
+
 ## Blockers and requests
 
 | Blocker | Attempted | Need | Owner / deadline |

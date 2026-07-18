@@ -40,6 +40,17 @@ def fail(message: str) -> None:
     raise SystemExit(1)
 
 
+def iter_strings(value: Any):
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for item in value.values():
+            yield from iter_strings(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from iter_strings(item)
+
+
 def resolve_ref(root: dict[str, Any], reference: str) -> dict[str, Any]:
     if not reference.startswith("#/"):
         raise ValueError(f"unsupported external reference: {reference}")
@@ -156,9 +167,11 @@ def main() -> None:
         if entry["status"] == "unverified" and entry["verified_at"] is not None:
             fail(f"{name}: unverified entry must keep verified_at null")
 
-    serialized = json.dumps(report)
-    if re.search(r"[A-Za-z]:\\\\Users\\\\|/home/|/Users/", serialized):
-        fail("report contains a local absolute path")
+    for item in iter_strings(report):
+        if item.startswith(("http://", "https://")):
+            continue
+        if re.search(r"[A-Za-z]:\\Users\\|/home/|/Users/", item):
+            fail("report contains a local absolute path")
 
     print("PASS: capability report conforms to schema and Week 01 evidence rules")
     print(f"PASS: {len(capabilities)}/{len(capabilities)} capability entries include version/date/method notes")
