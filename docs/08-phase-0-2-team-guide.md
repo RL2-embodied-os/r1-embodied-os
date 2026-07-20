@@ -68,47 +68,50 @@
 - **DESIGN** - the Phase 1 data contracts are ready for team review and integration planning.
 - **OPEN** - a working sensor or cloud-upload pipeline is not part of this package.
 
-## Phase 2 - High-level action-request contracts
+## Phase 2 - R1RobotAdapter and ABot-Claw integration
 
 ### Available to us now
 
-- **DESIGN** - `SkillCommand` is limited to `stand`, `move_velocity`, and `stop`; it is a remote action request rather than executable Python or a hardware command.
-- **DESIGN** - command identity, expiry, TTL, requested priority, preconditions, timeout behavior, and motion lease requirements are specified.
-- **DESIGN** - idempotent replay and idempotency-conflict semantics are documented.
-- **DESIGN** - `stop` is valid without a lease or ARMED state and requests a locally selected stopping process.
-- **DESIGN** - scheduler, idempotency-store, lease-validator, safety-supervisor, state-provider, and robot-adapter interfaces are importable without hardware behavior.
-- **DESIGN** - local authorization, hard limits, precondition recomputation, arbitration, and final safety decisions remain robot-side responsibilities.
+- **DESIGN** - R1 follows ABot-Claw's `/code/execute + env.xxx()` pattern. Safety is provided
+  by lease TTL, CodeValidator, Critic feedback, and SDK2-level safety — no intermediate
+  JSON command layer.
+- **DESIGN** - `R1RobotAdapter` exposes a clean Python API (`stand()`, `move_velocity()`,
+  `stop()`, `damp()`, `read_cameras()`, `get_state()`) modeled on ABot-Claw's `PiperRobotEnv`.
+- **DESIGN** - `contracts/skill-command.schema.json` is kept as reference documentation of
+  valid parameter ranges for the LLM — not as an execution interface.
+- **DESIGN** - lease management and code execution reuse ABot-Claw's existing implementations.
+- **DESIGN** - local authorization, hard limits, and final safety decisions remain robot-side
+  responsibilities.
 
-### Phase 2 acceptance checks we can share
+### Phase 2 acceptance checks
 
-| ID | Status | Requirement | Current evidence | Current proof limit |
-| --- | --- | --- | --- | --- |
-| P2-A1 | **DESIGN** - `AVAILABLE NOW` | Expired commands are rejected before execution. | [Contract semantics](04-contract-semantics.md) and [expired example](../examples/invalid-expired-command.json) | **DESIGN** - schema and semantic cases exist; a production scheduler is not included. |
-| P2-A2 | **DESIGN** - `AVAILABLE NOW` | Reusing `command_id` with the same canonical request returns stored status or result without another side effect. | [Idempotency semantics](04-contract-semantics.md#idempotency) | **DESIGN** - the invariant is specified; persistent-store implementation evidence remains a gate. |
-| P2-A3 | **DESIGN** - `AVAILABLE NOW` | Reusing `command_id` with different content is rejected as `idempotency_conflict`. | [Idempotency semantics](04-contract-semantics.md#idempotency) | **DESIGN** - the invariant is specified; runtime conflict testing remains a gate. |
-| P2-A4 | **DESIGN** - `AVAILABLE NOW` | Motion requests require a lease and an ARMED precondition request. | [SkillCommand schema](../contracts/skill-command.schema.json) and [missing-lease example](../examples/invalid-motion-without-lease.json) | **DESIGN** - structural rejection is testable without hardware. |
-| P2-A5 | **DESIGN** - `AVAILABLE NOW` | `stop` can enter the local stopping process without a lease or ARMED state. | [Stop example](../examples/valid-stop-without-lease.json) and [safety rules](05-safety-and-lab-rules.md) | **DESIGN** - request acceptance is defined; the physical response remains local and unverified. |
-| P2-A6 | **DESIGN** - `AVAILABLE NOW` | Unregistered skills are rejected. | The SkillCommand schema enum contains only `stand`, `move_velocity`, and `stop`. | **DESIGN** - schema rejection is defined; an end-to-end LLM-to-registry test is deferred. |
-| P2-A7 | **DESIGN** - `AVAILABLE NOW` | Remote arguments, priority, and preconditions cannot enlarge local safety authority. | [Contract semantics](04-contract-semantics.md) and [safety rules](05-safety-and-lab-rules.md) | **DESIGN** - authority is specified; local policy implementation remains a gate. |
+| ID | Status | Requirement | Current evidence |
+| --- | --- | --- | --- |
+| P2-A1 | **DESIGN** - `AVAILABLE NOW` | `R1RobotAdapter` method signatures and TypedDict docs are internally consistent. | [robot_adapter.py](../interfaces/robot_adapter.py), [models.py](../interfaces/models.py) |
+| P2-A2 | **DESIGN** - `AVAILABLE NOW` | Lease TTL expiry triggers local safe-stop. | ABot-Claw `lease.py` pattern; R1 integration pending |
+| P2-A3 | **DESIGN** - `AVAILABLE NOW` | CodeValidator blocks dangerous Python (shell, network, file delete). | ABot-Claw `code_executor.py` pattern; R1 adaptation pending |
+| P2-A4 | **DESIGN** - `AVAILABLE NOW` | Adapter methods return documented shapes. | Per-method docstrings on `R1RobotAdapter` |
+| P2-A5 | **DESIGN** - `AVAILABLE NOW` | `stop` always works regardless of lease state. | Adapter exposes `stop()` and `damp()` unconditionally |
+| P2-A6 | **OPEN** - `TO VALIDATE` | LLM-generated code calling the adapter executes correctly on R1. | Requires supervised hardware test |
+| P2-A7 | **DESIGN** - `AVAILABLE NOW` | No SDK method is equated with physical E-Stop. | [Safety rules](05-safety-and-lab-rules.md) |
 
 ### What we still need to validate in this phase
 
-- **OPEN** - implement and test the scheduler, idempotency store, lease lifecycle, capability gate, and safety supervisor in an internal or later implementation package.
-- **OPEN** - record rejection reasons, state transitions, timing, persistence retention, restart behavior, and failure-injection evidence for that implementation.
-- **OPEN** - validate any robot-local adapter against the delivered firmware and approved local hard limits.
-- **OPEN** - demonstrate that cloud-session loss and command timeout enter the host-approved local safety state.
+- **OPEN** - integrate ABot-Claw's existing lease manager and CodeValidator with R1's Agent Server.
+- **OPEN** - implement `R1RobotAdapter` methods against the delivered R1 SDK2/DDS interface.
+- **OPEN** - demonstrate that lease TTL expiry and cloud-session loss enter a locally configured safe state.
 - **OPEN** - obtain explicit approval before any supervised motion test.
 
 ### Shared Phase 2 conclusion
 
-- **DESIGN** - the Phase 2 contracts and safety design are ready for team review and implementation planning.
-- **OPEN** - an operational scheduler, safety supervisor, simulator adapter, or real R1 adapter is not part of this package.
+- **DESIGN** - the Phase 2 adapter contracts and ABot-Claw integration plan are ready for team review.
+- **OPEN** - a working R1 Adapter implementation, lease integration, or supervised motion test is not part of this package.
 
 ## Boundaries we should keep clear in Phase 0-2
 
 - **OPEN** - no delivered R1 skill or sensor is claimed operational without commissioning evidence.
 - **DESIGN** - no SDK method is equated with physical E-Stop.
-- **DESIGN** - no low-level motor, joint, torque, arm, head, navigation, obstacle-avoidance, or `sit` command is exposed.
+- **DESIGN** - `sit`, `head_control`, and low-level motor/joint/torque/arm commands are excluded pending hardware evidence.
 - **DESIGN** - no working cloud service, scheduler implementation, safety implementation, simulation, robot connection, or hardware-control path is included.
 - **DESIGN** - no visual memory, multimodal memory, critic feedback, manipulation recovery, VLA, or autonomous replanning capability is included.
 
@@ -141,7 +144,7 @@
 - [ ] **DESIGN** - each teammate starts from the open validation questions relevant to their role (see Week 1 task breakdown).
 - [ ] **DESIGN** - internal experiment logs, device details, and lab-specific information stay in `experiments/week01/`, not in this package.
 - [ ] **DESIGN** - keep the Phase 3 backlog as planning context only; do not include it in Phase 0-2 completion claims.
-- [ ] **DESIGN** - the Edge Gateway layer (command_validator, idempotency_store, lease_manager, safety_supervisor) is shared across all robots and should eventually be extracted from Piper's existing implementation rather than rebuilt per robot.
+- [ ] **DESIGN** - ABot-Claw's lease manager, CodeValidator, and code executor are shared across all robots. R1 reuses them via the `/code/execute` pattern rather than reimplementing scheduling or safety logic.
 
 ## What we can say as a team
 

@@ -5,7 +5,10 @@
 - **DESIGN** — This document defines the Week 1 Mock/read-only integration seams. It is not evidence of delivered R1 capabilities.
 - **DESIGN** — The only executable scope is contract validation and deterministic Mock data processing.
 - **OPEN** — R1 sensor availability, firmware fields, timestamps, formats, and transport behavior require evidence from the hardware workstream.
-- **DESIGN** — Robot motion, audio output, SkillCommand runtime, leases, scheduling, vendor SDK calls, DDS, ROS, sockets, subprocesses, and device access are outside Week 1.
+- **DESIGN** — R1 follows ABot-Claw's `/code/execute + env.xxx()` pattern. The Week 1 data contracts
+  serve as the data-definition side of R1's SDK docs for LLM code generation.
+- **DESIGN** — Robot motion, audio output, vendor SDK calls, DDS, ROS, sockets, subprocesses, and
+  device access are outside Week 1.
 
 ## Module boundaries
 

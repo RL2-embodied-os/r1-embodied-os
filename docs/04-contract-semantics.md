@@ -1,8 +1,13 @@
 # Contract Semantics
 
+- **DESIGN** - R1 follows ABot-Claw's `/code/execute + env.xxx()` pattern. The contracts
+  below (SkillCommand shape, RobotState, Telemetry, Capability) serve as the
+  data-definition side of R1's SDK docs — the LLM reads them alongside the
+  `R1RobotAdapter` Python API. No intermediate JSON command translation layer.
+
 - **DESIGN** - SkillCommand, RobotState, Capability, and Telemetry are normative drafts for this project. Version `1.0` identifies their current wire shape; it does not claim product or standards-body finality.
 
-## SkillCommand
+## SkillCommand (reference documentation for LLM code generation)
 
 - **DESIGN** - `command_id` is the globally unique idempotency key.
 - **DESIGN** - `issued_at` and `expires_at` use RFC 3339 UTC timestamps. A command is rejected as `invalid_time_window` when `expires_at <= issued_at` or when `expires_at` is later than `issued_at + ttl_ms`.

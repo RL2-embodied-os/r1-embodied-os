@@ -1,22 +1,15 @@
-from typing import Optional, Protocol
+"""Edge-side interfaces aligned with ABot-Claw's /code/execute + env.xxx() pattern.
 
-from .models import ActionReceipt, CommandStatus, RobotState, SkillCommand, ValidationResult
+No separate CommandScheduler, SafetySupervisor, or typed SkillCommand.
+Scheduling and safety are handled by ABot-Claw's lease manager and
+code executor; the robot adapter is the only typed execution seam.
+"""
 
-class IdempotencyStore(Protocol):
-    async def lookup(self, command_id: str) -> Optional[ActionReceipt]: ...
-    async def record_request(self, command: SkillCommand, canonical_request: bytes) -> ActionReceipt: ...
-    async def record_status(self, command_id: str, status: CommandStatus, reason: Optional[str]) -> None: ...
+from typing import Protocol
 
-class LeaseValidator(Protocol):
-    async def validate(self, robot_id: str, lease_id: str, local_deadline_mono_ns: int) -> ValidationResult: ...
+from .models import RobotState
 
-class SafetySupervisor(Protocol):
-    async def validate_final_command(self, command: SkillCommand, state: RobotState, local_deadline_mono_ns: int) -> ValidationResult: ...
-    async def request_local_safe_stop(self, command_id: str, reason: str) -> ActionReceipt: ...
-
-class CommandScheduler(Protocol):
-    async def submit(self, command: SkillCommand) -> ActionReceipt: ...
-    async def get_status(self, command_id: str) -> Optional[ActionReceipt]: ...
 
 class RobotStateProvider(Protocol):
+    """Provides the current RobotState snapshot to the LLM context."""
     async def get_state(self, robot_id: str) -> RobotState: ...

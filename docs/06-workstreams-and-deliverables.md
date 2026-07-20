@@ -20,21 +20,21 @@
 - **OPEN** - codec, resolution, sampling, channel count, depth, and acoustic processing remain unset until evidence exists.
 - **DESIGN** - acceptance: example metadata validates without containing media payloads or private endpoints.
 
-## Workstream C - Control and telemetry contracts
+## Workstream C - Adapter design and data contracts
 
-- **DESIGN** - role: control-contract and telemetry analyst.
-- **DESIGN** - input: SkillCommand, RobotState, Capability, and Telemetry schemas.
-- **DESIGN** - dependencies: Workstream A capability evidence and the safety/lease rules approved through Workstream D.
-- **DESIGN** - deliverables: compatibility review, valid/invalid examples, idempotency state table, and versioning proposal.
-- **DESIGN** - acceptance: motion without a lease and expired motion fail; lease-independent `stop` succeeds.
+- **DESIGN** - role: adapter-contract and data-format analyst.
+- **DESIGN** - input: `R1RobotAdapter` Protocol, RobotState, Capability, and Telemetry schemas.
+- **DESIGN** - dependencies: Workstream A capability evidence and ABot-Claw's existing lease/CodeValidator patterns.
+- **DESIGN** - deliverables: per-method data contracts (input/output TypedDicts), valid/invalid examples, and adapter-ABot-Claw integration notes.
+- **DESIGN** - acceptance: adapter method signatures match their TypedDict documentation; LLM-facing SDK docs are internally consistent.
 
-## Workstream D - Scheduler and safety design
+## Workstream D - Lease and safety integration
 
-- **DESIGN** - role: scheduler and safety-design analyst.
-- **DESIGN** - input: side-effect-free interface protocols, safety rules, and host-approved policy requirements.
-- **DESIGN** - dependencies: Workstream C contract semantics, Workstream A commissioning evidence, and host safety authority decisions.
-- **DESIGN** - deliverables: state-transition table, rejection-reason catalog, lease lifecycle, failure-injection matrix, and review checklist.
-- **DESIGN** - acceptance: the design gives the robot-side safety supervisor final authority and never maps physical E-Stop to an SDK command.
+- **DESIGN** - role: lease and safety-integration analyst.
+- **DESIGN** - input: ABot-Claw's existing lease manager, CodeValidator, and `/code/execute` infrastructure.
+- **DESIGN** - dependencies: Workstream C adapter contracts, Workstream A commissioning evidence, and host safety authority decisions.
+- **DESIGN** - deliverables: lease-lifecycle mapping to R1 modes, safe-stop behavior specification, failure-injection matrix, and R1 safety review checklist.
+- **DESIGN** - acceptance: lease TTL expiry triggers local safe-stop; CodeValidator blocks dangerous Python patterns; physical E-Stop is never mapped to an SDK call.
 
 ## Shared review cadence
 

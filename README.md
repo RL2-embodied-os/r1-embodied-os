@@ -60,46 +60,52 @@ python -m tests.validate_all_contracts
 
 ## Package boundary
 
-- **DESIGN** - RTDL/SkillCommand messages are remote action requests, not motor, joint, DDS, or physical-safety commands.
-- **DESIGN** - local authorization, hard limits, arbitration, expiry enforcement, and final safety decisions belong to the robot-side safety supervisor.
-- **DESIGN** - the files under `interfaces/` are importable `.py` contracts with no import-time side effects or hardware implementation. They cannot connect to or control a robot.
-- **DESIGN** - SkillCommand, RobotState, Capability, and Telemetry are normative draft contracts for this project; camera and audio metadata contracts are non-normative drafts pending commissioning.
-- **OPEN** - no R1 capability is considered usable merely because a public SDK symbol exists. Delivered-firmware validation is required.
+- **DESIGN** - R1 follows ABot-Claw's `/code/execute + env.xxx()` pattern. The LLM reads SDK
+  docs (Adapter methods + Week 1 contracts) and generates Python code directly. Safety is
+  provided by lease TTL, CodeValidator, Critic feedback, and SDK2-level safety — no
+  intermediate JSON command layer.
+- **DESIGN** - `R1RobotAdapter` exposes a clean Python API (`stand()`, `move_velocity()`,
+  `read_cameras()`, etc.) modeled on ABot-Claw's `PiperRobotEnv`.
+- **DESIGN** - Week 1 contracts (RobotState, Capability, Telemetry, camera/audio metadata,
+  detection/ASR results) serve as the data-definition side of R1's SDK docs. The
+  `skill-command.schema.json` is kept as documentation of valid parameter ranges — not as
+  an execution interface.
+- **DESIGN** - the files under `interfaces/` are importable `.py` contracts with no import-time
+  side effects or hardware implementation. They cannot connect to or control a robot.
+- **OPEN** - no R1 capability is considered usable merely because a public SDK symbol exists.
+  Delivered-firmware validation is required.
 
 - **DESIGN** - this package intentionally contains no robot SDK imports, DDS initialization, sockets, subprocesses, device access, credentials, private endpoints, or binary media.
 
-## Two-layer architecture: shared Edge Gateway vs per-robot Adapter
+## Architecture: ABot-Claw pattern with R1RobotAdapter
 
-- **DESIGN** - The target architecture separates shared Edge Gateway responsibilities from per-robot Adapter responsibilities:
+- **DESIGN** - R1 follows ABot-Claw's proven architecture. The LLM generates Python code that
+  calls the Adapter's methods directly; safety comes from lease TTL, CodeValidator, and Critic.
 
 ```
-ABot-Claw Cloud (perception, reasoning, task planning)
-        │
-        │  SkillCommand / RobotState / Telemetry / Capability
-        │
-┌─ Edge Gateway (SHARED — one implementation for all robots) ─┐
-│  command_validator    schema + expiry + clock skew          │
-│  idempotency_store    command_id dedup                      │
-│  lease_manager        grant / validate / revoke             │
-│  safety_supervisor    final software gate before adapter    │
-└─────────────────────────────────────────────────────────────┘
-        │
-        │  R1RobotAdapter Protocol  (per-robot)
-        │
-┌─ Robot Adapter (PER-ROBOT — R1-specific) ─┐      Go2   G1   Piper
-│  telemetry_normalizer   raw→Telemetry      │      ...   ...   ...
-│  robot_state_provider   snapshot           │
-│  capability discovery   SDK→Capability     │
-│  motion adapter         SkillCommand→SDK   │
+OpenClaw / LLM
+    │  reads SDK docs (Adapter methods + Week 1 contracts)
+    │  generates: env.stand(); env.move_velocity(0.15, 0, 0, 800)
+    ▼
+POST /code/execute  (lease + CodeValidator)
+    │
+    ▼
+R1RobotAdapter  (per-robot Python API)
+    │  stand()  move_velocity()  read_cameras()  get_state()
+    ▼
+SDK2 / DDS  (vendor control, 500 Hz loop)
 └────────────────────────────────────────────┘
         │
    R1 SDK / Hardware
 ```
 
-- **DESIGN** - the Edge Gateway layer is robot-agnostic. A future shared implementation should reuse an audited lease pattern rather than duplicate robot-specific lease logic.
-- **DESIGN** - the Robot Adapter layer is per-robot. R1 needs its own adapter because the SDK, sensor layout, and physical behavior differ from Piper. This is the layer where Phase 0-2 R1 work happens.
-- **DESIGN** - Phase 0-1 (this week): read-only Robot Adapter work only (telemetry, state, capability). No Edge Gateway implementation needed yet.
-- **DESIGN** - Phase 2 (later): Edge Gateway implementation — at that point the team should extract from Piper rather than build from scratch.
+- **DESIGN** - The `R1RobotAdapter` is the only per-robot component. It follows the same
+  pattern as ABot-Claw's `PiperRobotEnv`: a clean Python API that the LLM calls directly.
+  Lease management and code execution reuse ABot-Claw's existing implementations.
+- **DESIGN** - Week 2 target: `R1RobotAdapter` method signatures and per-method data
+  contracts drafted. Implementation follows Week 1's read-only chain completion.
+- **DESIGN** - Future work: once the R1 Adapter is proven, extract shared lease/scheduling
+  patterns from ABot-Claw's Piper Agent Server for deployment on R1's edge computer.
 
 ## Directory guide
 

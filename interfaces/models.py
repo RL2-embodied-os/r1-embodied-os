@@ -1,71 +1,21 @@
-from enum import Enum
-from typing import List, Literal, Optional, TypedDict, Union
+from typing import List, Literal, Optional, TypedDict
 
-SkillName = Literal["stand", "move_velocity", "stop"]
-TimeoutBehavior = Literal["safe_stop"]
 CapabilityStatus = Literal["supported", "unavailable", "unverified", "degraded"]
 RobotMode = Literal["boot", "discovery", "idle", "armed", "executing", "safe_stop", "estop", "unknown"]
 RobotHealth = Literal["ready", "busy", "degraded", "offline", "estop", "unknown"]
-Precondition = Literal["capability_available", "not_estopped", "armed", "lease_valid"]
 TransportType = Literal["webrtc", "multipart_upload", "object_storage"]
 TimestampSource = Literal["monotonic_correlated", "utc", "device", "unknown"]
 
-class CommandDecision(str, Enum):
-    ACCEPTED = "accepted"
-    REJECTED = "rejected"
-    IDEMPOTENT_REPLAY = "idempotent_replay"
-    IDEMPOTENCY_CONFLICT = "idempotency_conflict"
+# -- SkillCommand data shapes are kept as documentation of valid parameter
+#    ranges.  The LLM reads these alongside the Adapter methods; no JSON
+#    translation layer is inserted between them.
 
-class CommandStatus(str, Enum):
-    PENDING = "pending"
-    ACCEPTED = "accepted"
-    EXECUTING = "executing"
-    SUCCEEDED = "succeeded"
-    REJECTED = "rejected"
-    TIMED_OUT = "timed_out"
-    CANCELLED = "cancelled"
+StandArgs = TypedDict("StandArgs", {})
+MoveVelocityArgs = TypedDict("MoveVelocityArgs", {
+    "vx": float, "vy": float, "yaw_rate": float, "duration_ms": int,
+})
+StopArgs = TypedDict("StopArgs", {})
 
-class StandArgs(TypedDict):
-    pass
-
-class MoveVelocityArgs(TypedDict):
-    vx_mps: float
-    vy_mps: float
-    yaw_rate_rps: float
-    duration_ms: int
-
-class StopArgs(TypedDict):
-    pass
-
-class _SkillCommandBase(TypedDict):
-    schema_version: Literal["1.0"]
-    command_id: str
-    robot_id: str
-    issued_at: str
-    expires_at: str
-    ttl_ms: int
-    priority: int
-    preconditions: List[Precondition]
-    on_timeout: TimeoutBehavior
-
-class StandCommand(_SkillCommandBase):
-    lease_id: str
-    skill: Literal["stand"]
-    args: StandArgs
-
-class MoveVelocityCommand(_SkillCommandBase):
-    lease_id: str
-    skill: Literal["move_velocity"]
-    args: MoveVelocityArgs
-
-class _StopCommandRequired(_SkillCommandBase):
-    skill: Literal["stop"]
-    args: StopArgs
-
-class StopCommand(_StopCommandRequired, total=False):
-    lease_id: str
-
-SkillCommand = Union[StandCommand, MoveVelocityCommand, StopCommand]
 
 class RobotState(TypedDict):
     schema_version: Literal["1.0"]
@@ -171,13 +121,3 @@ class AudioChunkMetadataDraft(TypedDict):
     verification_status: Literal["unverified", "verified", "degraded"]
     transport: MediaTransportReference
 
-class ActionReceipt(TypedDict):
-    command_id: str
-    decision: CommandDecision
-    status: CommandStatus
-    reason: Optional[str]
-
-class ValidationResult(TypedDict):
-    accepted: bool
-    reason: Optional[str]
-    local_deadline_mono_ns: Optional[int]
