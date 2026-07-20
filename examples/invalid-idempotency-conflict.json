@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "command_id": "cmd-stand-001",
+  "skill": "stop",
+  "skill_arguments": {},
+  "preconditions": [],
+  "on_timeout": "safe_stop",
+  "lease": null,
+  "priority": 10,
+  "issued_at": "2026-07-17T15:00:00Z",
+  "expires_at": "2026-07-17T15:00:05Z",
+  "ttl_ms": 5000
+}
