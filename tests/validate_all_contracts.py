@@ -148,6 +148,7 @@ CASE_SPECS: Sequence[CaseSpec] = (
     CaseSpec("invalid_telemetry_timestamp", EXAMPLES_DIR / "week01" / "invalid-telemetry-timestamp.json", TELEMETRY_SCHEMA, "schema_invalid", None),
     CaseSpec("camera_missing_size", EXAMPLES_DIR / "week01" / "camera-frame-missing-size.json", CAMERA_SCHEMA, "schema_valid", "semantic_invalid", _validate_camera_for_detection),
     CaseSpec("camera_expired_transport", EXAMPLES_DIR / "week01" / "camera-frame-expired-transport.json", CAMERA_SCHEMA, "schema_valid", "semantic_invalid", _validate_camera_for_detection),
+    CaseSpec("valid_camera_complete", EXAMPLES_DIR / "week01" / "valid-camera-frame.json", CAMERA_SCHEMA, "schema_valid", "semantic_valid", _validate_camera_for_detection),
 )
 
 
